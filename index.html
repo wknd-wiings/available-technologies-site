@@ -41,7 +41,12 @@
   }
   .nav{max-width:1120px; margin:0 auto; padding:.7rem 1.25rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap;}
   .wordmark{font-size:1.35rem; font-weight:800; color:#f8fafc; letter-spacing:.2px; text-decoration:none; white-space:nowrap;}
-  .wordmark .ai{color:var(--gold);}
+  .wordmark .ai, .hero .wordmark-big .ai{
+    font-family:Georgia, 'Times New Roman', serif;
+    background:linear-gradient(180deg,#f9e48d 0%, #eed06a 28%, var(--gold) 47%, #8a6d1f 54%, #c9a437 72%, #f2d67c 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter:drop-shadow(0 1px 0 rgba(255,244,196,.5)) drop-shadow(0 -1px 1px rgba(74,55,8,.55)) drop-shadow(0 2px 2px rgba(0,0,0,.35));
+  }
   nav.links{margin-left:auto; display:flex; gap:.25rem; flex-wrap:wrap;}
   nav.links a{
     color:#e2e8f0; text-decoration:none; font-weight:600; font-size:.95rem;
@@ -53,7 +58,7 @@
   /* ---------- Hero ---------- */
   .hero{background:radial-gradient(ellipse 70% 45% at 50% -5%, rgba(212,175,55,.14), transparent 60%), linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%); color:#f8fafc; padding:4.2rem 1.25rem 3.6rem; text-align:center;}
   .hero .wordmark-big{font-size:clamp(2.4rem,6.5vw,4.2rem); font-weight:800; letter-spacing:.2px; line-height:1.05;}
-  .hero .wordmark-big .ai{color:var(--gold);}
+  /* hero .ai gold-bar treatment is defined with .wordmark .ai above */
   .launch-badge{
     display:inline-block; margin-top:1.4rem; padding:.4rem 1rem; border:1px solid var(--gold); border-radius:999px;
     color:var(--gold); font-weight:700; font-size:.9rem; letter-spacing:.4px; background:rgba(212,175,55,.1);
