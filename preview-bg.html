@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PREVIEW — avAIlable hero background motion concept (not live)</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --navy:#0b1220; --navy-2:#101c33; --ink:#0f172a;
+    --gold:#d4af37; --gold-deep:#8a6d1f;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--navy); line-height:1.55;}
+  :focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:6px;}
+
+  /* ---------- Buttons (same as live site) ---------- */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    min-height:48px; padding:.8rem 1.5rem; border-radius:10px; border:1px solid #8a6d1f;
+    font-size:1rem; font-weight:700; text-decoration:none; cursor:pointer; color:var(--navy);
+    background:linear-gradient(180deg,#f2d67c 0%, var(--gold) 48%, #b28c26 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 3px rgba(120,84,10,.35), 0 5px 12px rgba(146,110,20,.35);
+    transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  .btn:hover{filter:brightness(1.05);}
+  .btn:active{transform:translateY(1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 2px rgba(120,84,10,.3), 0 1px 3px rgba(146,110,20,.4);}
+  .btn.ghost{
+    background:linear-gradient(180deg,#ffffff 0%, #e8eef5 100%); color:var(--ink); border:1px solid #b6c2d2;
+    box-shadow:inset 0 1px 0 #fff, inset 0 -2px 3px rgba(15,23,42,.08), 0 4px 10px rgba(15,23,42,.12);
+  }
+
+  /* ---------- Header (same as live site, Part A brand) ---------- */
+  header.site{position:sticky; top:0; z-index:50; background:rgba(11,18,32,.97); border-bottom:1px solid #1e293b;}
+  .nav{max-width:1120px; margin:0 auto; padding:.7rem 1.25rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap;}
+  .brand{font-size:1.08rem; font-weight:800; color:#f8fafc; letter-spacing:2.6px; text-transform:uppercase; text-decoration:none; white-space:nowrap;}
+  .brand .llc{color:var(--gold);}
+  nav.links{margin-left:auto; display:flex; gap:.25rem; flex-wrap:wrap;}
+  nav.links a{color:#e2e8f0; text-decoration:none; font-weight:600; font-size:.95rem; padding:.55rem .8rem; min-height:44px; display:inline-flex; align-items:center; border-radius:8px;}
+  nav.links a:hover{background:#1e293b; color:#fff;}
+
+  /* ---------- Hero with motion background ---------- */
+  .hero{position:relative; overflow:hidden; background:var(--navy); color:#f8fafc; padding:4.2rem 1.25rem 3.6rem; text-align:center;}
+  .hero-bg{position:absolute; inset:0; z-index:0;}
+  .slide{
+    position:absolute; inset:0; background-size:cover; background-position:center;
+    opacity:0; animation:slideFade 50s linear infinite; filter:brightness(1.18) saturate(1.05);
+  }
+  .slide.s1{background-image:url('preview-assets/bg-computers.jpg');   animation-delay:0s;}
+  .slide.s2{background-image:url('preview-assets/bg-datacenter.jpg'); animation-delay:10s;}
+  .slide.s3{background-image:url('preview-assets/bg-robots.jpg');     animation-delay:20s;}
+  .slide.s4{background-image:url('preview-assets/bg-autocar.jpg');    animation-delay:30s;}
+  .slide.s5{background-image:url('preview-assets/bg-drone.jpg');      animation-delay:40s;}
+  @keyframes slideFade{
+    0%  {opacity:0; transform:scale(1.05);}
+    3%  {opacity:1;}
+    17% {opacity:1;}
+    21% {opacity:0; transform:scale(1.13);}
+    100%{opacity:0; transform:scale(1.13);}
+  }
+
+  /* Scrolling code layer — the code IS the two names */
+  .code-layer{position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none;}
+  .code-col{position:absolute; top:0; width:46%; }
+  .code-col.left{left:1.5%;}
+  .code-col.right{right:1.5%;}
+  .code-track{animation:codeScroll 150s linear infinite; will-change:transform;}
+  .code-col.right .code-track{animation-duration:190s; animation-delay:-60s;}
+  @keyframes codeScroll{from{transform:translateY(0);} to{transform:translateY(-50%);}}
+  .code-track pre{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12.5px; line-height:1.75; white-space:pre-wrap; word-break:break-word;
+    color:rgba(125,211,252,.42); padding-bottom:3rem;
+  }
+  .code-track .s{color:rgba(212,175,55,.6); font-weight:700;}
+  .code-track .c{color:rgba(148,163,184,.4); font-style:italic;}
+
+  /* Navy shade — keeps every word readable, keeps it upscale */
+  .hero-shade{
+    position:absolute; inset:0; z-index:2;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% -5%, rgba(212,175,55,.13), transparent 60%),
+      linear-gradient(180deg, rgba(11,18,32,.78) 0%, rgba(11,18,32,.84) 55%, rgba(16,28,51,.90) 100%);
+  }
+  .hero-inner{position:relative; z-index:3;}
+
+  .wordmark-big{font-size:clamp(2.4rem,6.5vw,4.2rem); font-weight:800; letter-spacing:.2px; line-height:1.05;}
+  .wordmark-big .ai{
+    font-family:Georgia, 'Times New Roman', serif;
+    background:linear-gradient(180deg,#f9e48d 0%, #eed06a 28%, var(--gold) 47%, #8a6d1f 54%, #c9a437 72%, #f2d67c 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter:drop-shadow(0 1px 0 rgba(255,244,196,.5)) drop-shadow(0 -1px 1px rgba(74,55,8,.55)) drop-shadow(0 2px 2px rgba(0,0,0,.35));
+  }
+  .tm{font-size:.3em; font-weight:700; color:var(--gold); letter-spacing:0;}
+  .launch-badge{
+    display:inline-block; margin-top:1.4rem; padding:.4rem 1rem; border:1px solid var(--gold); border-radius:999px;
+    color:var(--gold); font-weight:700; font-size:.9rem; letter-spacing:.4px; background:rgba(212,175,55,.1);
+  }
+  .tagline{font-size:clamp(1.45rem,3.6vw,2.3rem); font-style:italic; font-weight:600; color:#fff; max-width:820px; margin:1.6rem auto 0;}
+  .hero .sub{color:#e6edf6; max-width:720px; margin:1.1rem auto 0; font-size:1.08rem;}
+  .hero .sub strong{color:#fff;}
+  .hero-cta{margin-top:2rem; display:flex; gap:.9rem; justify-content:center; flex-wrap:wrap;}
+  .trades-row{margin-top:2.2rem; display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap;}
+  .trade-chip{
+    border:1px solid #334155; color:#e2e8f0; background:rgba(22,35,60,.85); border-radius:999px;
+    padding:.45rem .95rem; font-size:.92rem; font-weight:600; min-height:40px; display:inline-flex; align-items:center;
+  }
+  .hero .geo{margin-top:1.1rem; color:#aebdd0; font-size:.95rem;}
+
+  .preview-note{
+    position:fixed; left:14px; bottom:14px; z-index:99;
+    background:rgba(11,18,32,.92); color:#f2d67c; border:1px solid var(--gold);
+    font-size:.8rem; font-weight:700; letter-spacing:.6px; padding:.45rem .8rem; border-radius:999px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .slide{animation:none; opacity:0;}
+    .slide.s1{opacity:1;}
+    .code-track{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav">
+    <a class="brand" href="#top">MVP Forge <span class="llc">LLC</span></a>
+    <nav class="links">
+      <a href="#">What Is It?</a>
+      <a href="#">How It Works</a>
+      <a href="#">Hear a Sample Call</a>
+      <a href="#">Pricing</a>
+      <a href="#">Get Started</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="slide s1"></div>
+    <div class="slide s2"></div>
+    <div class="slide s3"></div>
+    <div class="slide s4"></div>
+    <div class="slide s5"></div>
+  </div>
+
+  <div class="code-layer" aria-hidden="true">
+    <div class="code-col left">
+      <div class="code-track">
+<pre><span class="c">// avAIlable™ — by MVP Forge LLC</span>
+const word = <span class="s">"available"</span>;
+
+function available() {
+  return <span class="s">"available"</span>; <span class="c">// always</span>
+}
+
+const company = <span class="s">"MVP Forge"</span>;
+const parent  = <span class="s">"MVP Forge LLC"</span>;
+
+forge.define(<span class="s">"company"</span>, () =&gt; <span class="s">"MVP Forge"</span>);
+
+class Receptionist {
+  status()  { return <span class="s">"available"</span>; }
+  company() { return <span class="s">"MVP Forge"</span>; }
+}
+
+<span class="c">// "av" + "AI" + "lable"</span>
+const name = [<span class="s">"av"</span>, <span class="s">"AI"</span>, <span class="s">"lable"</span>].join(<span class="s">""</span>);
+console.log(name);    <span class="c">// avAIlable</span>
+console.log(company); <span class="c">// MVP Forge</span></pre>
+<pre><span class="c">// avAIlable™ — by MVP Forge LLC</span>
+const word = <span class="s">"available"</span>;
+
+function available() {
+  return <span class="s">"available"</span>; <span class="c">// always</span>
+}
+
+const company = <span class="s">"MVP Forge"</span>;
+const parent  = <span class="s">"MVP Forge LLC"</span>;
+
+forge.define(<span class="s">"company"</span>, () =&gt; <span class="s">"MVP Forge"</span>);
+
+class Receptionist {
+  status()  { return <span class="s">"available"</span>; }
+  company() { return <span class="s">"MVP Forge"</span>; }
+}
+
+<span class="c">// "av" + "AI" + "lable"</span>
+const name = [<span class="s">"av"</span>, <span class="s">"AI"</span>, <span class="s">"lable"</span>].join(<span class="s">""</span>);
+console.log(name);    <span class="c">// avAIlable</span>
+console.log(company); <span class="c">// MVP Forge</span></pre>
+      </div>
+    </div>
+    <div class="code-col right">
+      <div class="code-track">
+<pre><span class="c"># the word, in code — and the forge</span>
+WORD    = <span class="s">"available"</span>
+COMPANY = <span class="s">"MVP Forge"</span>
+
+def is_available(shop):
+    return shop.calls_answered == <span class="s">"24/7"</span>
+
+def built_by():
+    return <span class="s">"MVP Forge"</span>  <span class="c"># MVP Forge LLC</span>
+
+print(WORD)     <span class="c"># available</span>
+print(COMPANY)  <span class="c"># MVP Forge</span>
+
+{
+  <span class="s">"product"</span>: <span class="s">"avAIlable"</span>,
+  <span class="s">"status"</span>:  <span class="s">"available"</span>,
+  <span class="s">"company"</span>: <span class="s">"MVP Forge"</span>,
+  <span class="s">"launch"</span>:  <span class="s">"2027-01-01"</span>
+}
+
+export const AVAILABLE = () =&gt; <span class="s">"available"</span>;
+export const FORGE     = () =&gt; <span class="s">"MVP Forge"</span>;</pre>
+<pre><span class="c"># the word, in code — and the forge</span>
+WORD    = <span class="s">"available"</span>
+COMPANY = <span class="s">"MVP Forge"</span>
+
+def is_available(shop):
+    return shop.calls_answered == <span class="s">"24/7"</span>
+
+def built_by():
+    return <span class="s">"MVP Forge"</span>  <span class="c"># MVP Forge LLC</span>
+
+print(WORD)     <span class="c"># available</span>
+print(COMPANY)  <span class="c"># MVP Forge</span>
+
+{
+  <span class="s">"product"</span>: <span class="s">"avAIlable"</span>,
+  <span class="s">"status"</span>:  <span class="s">"available"</span>,
+  <span class="s">"company"</span>: <span class="s">"MVP Forge"</span>,
+  <span class="s">"launch"</span>:  <span class="s">"2027-01-01"</span>
+}
+
+export const AVAILABLE = () =&gt; <span class="s">"available"</span>;
+export const FORGE     = () =&gt; <span class="s">"MVP Forge"</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-shade" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <div class="wordmark-big">av<span class="ai">AI</span>lable<sup class="tm">&trade;</sup></div>
+    <div><span class="launch-badge">LAUNCHING JANUARY 1, 2027</span></div>
+    <p class="tagline">&ldquo;How do you get the business if you don&rsquo;t get the call?&rdquo;</p>
+    <p class="sub">An <strong>AI voice receptionist built for local trade shops</strong>. It answers every call you miss &mdash; nights, weekends, and while every tech is on a job &mdash; qualifies the caller, books the work, and texts you the summary. You keep turning wrenches. It keeps your phone from ringing out.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#">Hear a Sample Call</a>
+      <a class="btn ghost" href="#">See Launch Pricing</a>
+    </div>
+    <div class="trades-row" aria-label="Trades we serve">
+      <span class="trade-chip">Plumbing</span>
+      <span class="trade-chip">HVAC</span>
+      <span class="trade-chip">Roofing</span>
+      <span class="trade-chip">Electrical</span>
+      <span class="trade-chip">Garage Door</span>
+      <span class="trade-chip">Pest Control</span>
+    </div>
+    <p class="geo">Built for owner-operated shops in Knoxville and East Tennessee first.</p>
+  </div>
+</div>
+
+<div class="preview-note">PREVIEW — background motion concept · not live</div>
+
+</body>
+</html>
