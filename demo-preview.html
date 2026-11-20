@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>avAIlable — The AI Receptionist for Local Trades</title>
+<meta name="description" content="avAIlable answers every call your shop misses — 24/7 AI voice receptionist for plumbing, HVAC, roofing, electrical, garage door, and pest control shops. Launching January 1, 2027.">
+<style>
+  :root{
+    --navy:#0b1220; --navy-2:#101c33; --ink:#0f172a; --slate:#475569; --slate-lt:#94a3b8;
+    --sky:#38bdf8; --sky-dark:#0284c7; --gold:#d4af37; --gold-deep:#8a6d1f; --paper:#ffffff; --mist:#f1f5f9; --line:#e2e8f0;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--paper); line-height:1.55;}
+  a{color:var(--gold-deep);}
+  :focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:6px;}
+
+  /* ---------- Buttons (house affordance standard) ---------- */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    min-height:48px; padding:.8rem 1.5rem; border-radius:10px; border:1px solid #8a6d1f;
+    font-size:1rem; font-weight:700; text-decoration:none; cursor:pointer; color:var(--navy);
+    background:linear-gradient(180deg,#f2d67c 0%, var(--gold) 48%, #b28c26 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 3px rgba(120,84,10,.35), 0 5px 12px rgba(146,110,20,.35);
+    transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  .btn:hover{filter:brightness(1.05);}
+  .btn:active{transform:translateY(1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 2px rgba(120,84,10,.3), 0 1px 3px rgba(146,110,20,.4);}
+  .btn.ghost{
+    background:linear-gradient(180deg,#ffffff 0%, #e8eef5 100%); color:var(--ink); border:1px solid #b6c2d2;
+    box-shadow:inset 0 1px 0 #fff, inset 0 -2px 3px rgba(15,23,42,.08), 0 4px 10px rgba(15,23,42,.12);
+  }
+  .btn.ghost:active{box-shadow:inset 0 1px 0 #fff, 0 1px 3px rgba(15,23,42,.15);}
+  .btn.small{min-height:44px; padding:.6rem 1.1rem; font-size:.95rem;}
+
+  /* ---------- Header ---------- */
+  header.site{
+    position:sticky; top:0; z-index:50; background:rgba(11,18,32,.97); border-bottom:1px solid #1e293b;
+  }
+  .nav{max-width:1120px; margin:0 auto; padding:.7rem 1.25rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap;}
+  .wordmark{font-size:1.35rem; font-weight:800; color:#f8fafc; letter-spacing:.2px; text-decoration:none; white-space:nowrap;}
+  .brand{font-size:1.08rem; font-weight:800; color:#f8fafc; letter-spacing:2.6px; text-transform:uppercase; text-decoration:none; white-space:nowrap;}
+  .brand .llc{color:var(--gold);}
+  .tm{font-size:.3em; font-weight:700; color:var(--gold); letter-spacing:0;}
+  .wordmark .ai, .hero .wordmark-big .ai{
+    font-family:Georgia, 'Times New Roman', serif;
+    background:linear-gradient(180deg,#f9e48d 0%, #eed06a 28%, var(--gold) 47%, #8a6d1f 54%, #c9a437 72%, #f2d67c 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter:drop-shadow(0 1px 0 rgba(255,244,196,.5)) drop-shadow(0 -1px 1px rgba(74,55,8,.55)) drop-shadow(0 2px 2px rgba(0,0,0,.35));
+  }
+  nav.links{margin-left:auto; display:flex; gap:.25rem; flex-wrap:wrap;}
+  nav.links a{
+    color:#e2e8f0; text-decoration:none; font-weight:600; font-size:.95rem;
+    padding:.55rem .8rem; min-height:44px; display:inline-flex; align-items:center; border-radius:8px;
+  }
+  nav.links a:hover{background:#1e293b; color:#fff;}
+  nav.links a:active{transform:translateY(1px);}
+
+  /* ---------- Hero ---------- */
+  .hero{background:radial-gradient(ellipse 70% 45% at 50% -5%, rgba(212,175,55,.14), transparent 60%), linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%); color:#f8fafc; padding:4.2rem 1.25rem 3.6rem; text-align:center;}
+  .hero .wordmark-big{font-size:clamp(2.4rem,6.5vw,4.2rem); font-weight:800; letter-spacing:.2px; line-height:1.05;}
+  /* hero .ai gold-bar treatment is defined with .wordmark .ai above */
+  .launch-badge{
+    display:inline-block; margin-top:1.4rem; padding:.4rem 1rem; border:1px solid var(--gold); border-radius:999px;
+    color:var(--gold); font-weight:700; font-size:.9rem; letter-spacing:.4px; background:rgba(212,175,55,.1);
+  }
+  .tagline{font-size:clamp(1.45rem,3.6vw,2.3rem); font-style:italic; font-weight:600; color:#fff; max-width:820px; margin:1.6rem auto 0;}
+  .hero .sub{color:#cbd5e1; max-width:720px; margin:1.1rem auto 0; font-size:1.08rem;}
+  .hero .sub strong{color:#fff;}
+  .hero-cta{margin-top:2rem; display:flex; gap:.9rem; justify-content:center; flex-wrap:wrap;}
+  .trades-row{margin-top:2.2rem; display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap;}
+  .trade-chip{
+    border:1px solid #334155; color:#e2e8f0; background:#16233c; border-radius:999px;
+    padding:.45rem .95rem; font-size:.92rem; font-weight:600; min-height:40px; display:inline-flex; align-items:center;
+  }
+  .hero .geo{margin-top:1.1rem; color:var(--slate-lt); font-size:.95rem;}
+
+  /* ---------- Sections ---------- */
+  section{padding:4.2rem 1.25rem;}
+  .wrap{max-width:1120px; margin:0 auto;}
+  .kicker{color:var(--gold-deep); font-weight:800; letter-spacing:2px; text-transform:uppercase; font-size:.8rem; text-align:center;}
+  h2.title{font-size:clamp(1.6rem,3.4vw,2.2rem); text-align:center; margin:.5rem auto 0; max-width:760px;}
+  .section-sub{text-align:center; color:var(--slate); max-width:700px; margin:.8rem auto 0;}
+  .alt{background:var(--mist);}
+
+  /* How it works */
+  .steps{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1.1rem; margin-top:2.2rem;}
+  .step{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:1.5rem 1.4rem;
+    box-shadow:0 1px 2px rgba(15,23,42,.05), 0 12px 26px rgba(15,23,42,.07);
+  }
+  .step .num{
+    width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(180deg,#f2d67c,var(--gold) 55%,#b28c26); color:var(--navy); font-weight:800; font-size:1.15rem;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 3px rgba(120,84,10,.3), 0 3px 7px rgba(146,110,20,.3); margin-bottom:.8rem;
+  }
+  .step h3{font-size:1.08rem; margin-bottom:.4rem;}
+  .step p{color:var(--slate); font-size:.97rem;}
+  .features{display:flex; gap:.55rem; flex-wrap:wrap; justify-content:center; margin-top:2rem;}
+  .feature-chip{
+    background:#fff; border:1px solid var(--line); border-radius:999px; padding:.5rem 1rem; min-height:40px;
+    display:inline-flex; align-items:center; font-weight:600; font-size:.93rem; color:var(--ink);
+    box-shadow:0 1px 3px rgba(15,23,42,.06);
+  }
+  .feature-chip b{color:var(--gold-deep); margin-right:.35rem;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav">
+    <a class="brand" href="#top">MVP Forge <span class="llc">LLC</span></a>
+    <nav class="links">
+      <a href="#what">What Is It?</a>
+      <a href="#how">How It Works</a>
+      <a href="#demo">Hear a Sample Call</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#start">Get Started</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<div class="hero" id="top">
+  <div class="wordmark-big">av<span class="ai">AI</span>lable<sup class="tm">&trade;</sup></div>
+  <div><span class="launch-badge">LAUNCHING JANUARY 1, 2027</span></div>
+  <p class="tagline">&ldquo;How do you get the business if you don&rsquo;t get the call?&rdquo;</p>
+  <p class="sub">An <strong>AI voice receptionist built for local trade shops</strong>. It answers every call you miss &mdash; nights, weekends, and while every tech is on a job &mdash; qualifies the caller, books the work, and texts you the summary. You keep turning wrenches. It keeps your phone from ringing out.</p>
+  <div class="hero-cta">
+    <a class="btn" href="#demo">Hear a Sample Call</a>
+    <a class="btn ghost" href="#pricing">See Launch Pricing</a>
+  </div>
+  <div class="trades-row" aria-label="Trades we serve">
+    <span class="trade-chip">Plumbing</span>
+    <span class="trade-chip">HVAC</span>
+    <span class="trade-chip">Roofing</span>
+    <span class="trade-chip">Electrical</span>
+    <span class="trade-chip">Garage Door</span>
+    <span class="trade-chip">Pest Control</span>
+  </div>
+  <p class="geo">Built for owner-operated shops in Knoxville and East Tennessee first.</p>
+</div>
+
+<!-- ================= WHAT IS IT ================= -->
+<section id="what">
+  <div class="wrap">
+    <p class="kicker">New to this? Start here</p>
+    <h2 class="title">&ldquo;How do you get the business if you don&rsquo;t get the call?&rdquo;</h2>
+    <p class="section-sub">That&rsquo;s the whole idea behind avAIlable, in one question. Here it is in plain language &mdash; what an AI receptionist is, what it does for your shop, and why there&rsquo;s nothing to be nervous about.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>What it is</h3>
+        <p>An AI receptionist is a voice assistant that answers your business phone the way a trained front-desk person would &mdash; greeting callers in your shop&rsquo;s name, asking the right questions, and taking down the details. Except it never sleeps: it answers 24/7, nights, weekends, and holidays, on the first ring, every time.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>What it does for your shop</h3>
+        <p>No more missed calls &mdash; and a caller who hits voicemail usually just dials the next shop on Google. While you&rsquo;re on a roof or under a sink, it books the job on your calendar, covers the after-hours calls you used to lose, and gives every caller a real conversation instead of a beep. You get a text summary the second each call ends.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>You stay in control</h3>
+        <p>AI is not bad &mdash; it&rsquo;s all in how you use it. Here, it&rsquo;s used for one thing: answering your calls and booking your work, saying only what you approved in your Business Pack &mdash; your services, your prices, your rules. Anything urgent escalates straight to you, and it always tells callers it&rsquo;s your AI assistant. No fake humans, ever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section id="how" class="alt">
+  <div class="wrap">
+    <p class="kicker">How It Works</p>
+    <h2 class="title">Your phone answers itself &mdash; in your shop&rsquo;s name, with your shop&rsquo;s rules</h2>
+    <p class="section-sub">Every shop gets its own Business Pack: your services, your prices that can be quoted, your service area, your emergency rules. The receptionist only ever says what you approved &mdash; and it always tells callers it&rsquo;s the shop&rsquo;s AI assistant. No fake humans, ever.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>It answers every call, 24/7</h3>
+        <p>After hours, on weekends, on holidays, and during the day when the office phone rings out &mdash; the call gets answered in your shop&rsquo;s name, in English or Spanish, the moment a caller speaks either one.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>It books the job</h3>
+        <p>It asks the questions you&rsquo;d ask, checks the caller is in your service area, and books a real appointment window on your calendar &mdash; stating your diagnostic fee exactly the way you worded it, never inventing a price.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>Emergencies jump the line</h3>
+        <p>Burst pipe, no heat with a baby in the house, sparking panel &mdash; emergencies skip the booking script and escalate straight to your on-call person, with the recording and transcript attached to the alert.</p>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <h3>You get the text</h3>
+        <p>The second a call ends, you get a text summary: who, what, where, when it&rsquo;s booked. The caller gets a confirmation text too &mdash; and if a caller ever hangs up or hits voicemail, a rescue text goes out so the job doesn&rsquo;t dial the next shop on Google.</p>
+      </div>
+    </div>
+
+    <div class="features">
+      <span class="feature-chip"><b>&#10003;</b> English &amp; Spanish on every plan &mdash; no upcharge</span>
+      <span class="feature-chip"><b>&#10003;</b> Overflow Mode: your person answers first, AI takes the rings they can&rsquo;t</span>
+      <span class="feature-chip"><b>&#10003;</b> Voice Choice: pick the voice that sounds like your shop</span>
+      <span class="feature-chip"><b>&#10003;</b> Monthly Money Report &mdash; calls answered and jobs booked, in dollars</span>
+      <span class="feature-chip"><b>&#10003;</b> Every call recorded &amp; transcribed</span>
+      <span class="feature-chip"><b>&#10003;</b> Month-to-month &mdash; cancel by text or email</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= DEMO ================= -->
+<style>
+  /* Trade tabs — recessed track, raised selected segment */
+  .tab-track{
+    display:flex; flex-wrap:wrap; gap:4px; background:#dde5ee; border:1px solid #c3cedd;
+    border-radius:12px; padding:4px; box-shadow:inset 0 2px 5px rgba(15,23,42,.15);
+    max-width:860px; margin:2rem auto 0;
+  }
+  .tab-btn{
+    flex:1 1 120px; min-height:44px; border:1px solid transparent; background:transparent; border-radius:9px;
+    font-size:.98rem; font-weight:700; color:#334155; cursor:pointer; padding:.6rem .5rem;
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+  }
+  .tab-btn:hover{color:var(--ink);}
+  .tab-btn[aria-selected="true"]{
+    background:linear-gradient(180deg,#ffffff,#eef4fa); color:var(--ink); border-color:#aebdd0;
+    box-shadow:0 3px 7px rgba(15,23,42,.18), inset 0 1px 0 #fff;
+  }
+  .tab-btn:active{transform:translateY(1px);}
+
+  .player{
+    max-width:860px; margin:1.4rem auto 0; background:var(--navy); border-radius:16px; padding:1.3rem;
+    box-shadow:0 10px 28px rgba(11,18,32,.28);
+  }
+  .player-head{display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; margin-bottom:.4rem;}
+  .player-head .scenario{color:#f8fafc; font-weight:700; font-size:1.05rem;}
+  .player-head .shop{color:var(--slate-lt); font-size:.92rem; width:100%;}
+  .live-dot{width:11px; height:11px; border-radius:50%; background:#64748b; flex:none;}
+  .live-dot.on{background:#f87171; box-shadow:0 0 0 4px rgba(248,113,113,.22); animation:pulse 1.2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 3px rgba(248,113,113,.25);}50%{box-shadow:0 0 0 7px rgba(248,113,113,.08);}100%{box-shadow:0 0 0 3px rgba(248,113,113,.25);}}
+  .transcript{
+    background:#0f1a2e; border:1px solid #1e293b; border-radius:12px; padding:1rem; height:380px;
+    overflow-y:auto; display:flex; flex-direction:column; gap:.65rem; scroll-behavior:smooth;
+  }
+  .msg{max-width:86%; padding:.65rem .9rem; border-radius:14px; font-size:.97rem; line-height:1.45; opacity:0; transform:translateY(6px); transition:opacity .35s ease, transform .35s ease;}
+  .msg.show{opacity:1; transform:none;}
+  .msg .who{display:block; font-size:.74rem; font-weight:800; letter-spacing:.8px; text-transform:uppercase; margin-bottom:.2rem;}
+  .msg.caller{align-self:flex-start; background:#1e293b; color:#e2e8f0; border-bottom-left-radius:4px;}
+  .msg.caller .who{color:#fbbf24;}
+  .msg.agent{align-self:flex-end; background:linear-gradient(180deg,#0e4a66,#083a54); color:#e0f2fe; border-bottom-right-radius:4px;}
+  .msg.agent .who{color:var(--gold);}
+  .msg.system{
+    align-self:center; background:#fef9c3; color:#713f12; border:1px dashed #d4a017; border-radius:10px;
+    font-size:.9rem; max-width:94%; text-align:left;
+  }
+  .msg.system .who{color:#92400e;}
+  .player-controls{display:flex; gap:.7rem; align-items:center; flex-wrap:wrap; margin-top:1rem;}
+  .progress{color:#cbd5e1; font-size:.9rem; margin-left:auto;}
+  .btn.dark-ghost{
+    background:linear-gradient(180deg,#1e293b,#16233c); color:#e2e8f0; border:1px solid #475569;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 4px 10px rgba(0,0,0,.3);
+  }
+  .demo-note{max-width:860px; margin:1rem auto 0; text-align:center; color:var(--slate); font-size:.95rem;}
+  .demo-note strong{color:var(--ink);}
+</style>
+
+<section id="demo" class="alt">
+  <div class="wrap">
+    <p class="kicker">Sample Calls</p>
+    <h2 class="title">Hear what your customers will hear</h2>
+    <p class="section-sub">Pick a trade and play the call. These are sample calls, scripted from the exact call flow every shop gets &mdash; greeting, questions, booking, and the text that lands on the owner&rsquo;s phone.</p>
+
+    <div class="tab-track" role="tablist" aria-label="Choose a trade">
+      <button class="tab-btn" role="tab" aria-selected="true" data-trade="plumbing">Plumbing</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-trade="hvac">HVAC</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-trade="roofing">Roofing</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-trade="electrical">Electrical</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-trade="garage">Garage Door</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-trade="pest">Pest Control</button>
+    </div>
+
+    <div class="player">
+      <div class="player-head">
+        <span class="live-dot" id="liveDot"></span>
+        <span class="scenario" id="scenarioTitle"></span>
+        <span class="shop" id="scenarioShop"></span>
+      </div>
+      <div class="transcript" id="transcript" aria-live="polite"></div>
+      <div class="player-controls">
+        <button class="btn small" id="playBtn" type="button">&#9654; Play Sample Call</button>
+        <button class="btn small dark-ghost" id="restartBtn" type="button">&#8635; Restart</button>
+        <span class="progress" id="progressText"></span>
+      </div>
+    </div>
+
+    <p class="demo-note"><strong>Sample call &mdash; the live talk-to-it demo opens at launch.</strong> The shops in these samples are fictional. When the live demo opens on January 1, you&rsquo;ll call a real number and talk to the receptionist yourself &mdash; and try to stump it.</p>
+
+    <div style="max-width:860px; margin:2.5rem auto 0;">
+      <h3 style="text-align:center; margin:0 0 .5rem;">Talk to the demo receptionist &mdash; live</h3>
+      <p style="text-align:center; color:var(--slate); margin:0 auto 1rem; max-width:640px;">This is Sam, the demo receptionist for Volunteer Home Services, a fictional Knoxville heating, air &amp; plumbing shop. Press start, allow your microphone, and talk to her like a customer &mdash; book a job, ask a price, or tell her your pipe burst and try to stump her.</p>
+      <div data-retell-widget="true"
+           data-voice-public-key="public_key_cb4d17617beec488d93b5"
+           data-voice-agent-id="agent_75a0a3993f3874769bc8af8624"
+           data-title="Volunteer Home Services — Demo"
+           style="height:540px; border-radius:16px; overflow:hidden;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<style>
+  .tiers{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.1rem; margin-top:2.2rem; align-items:stretch;}
+  .tier{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:1.6rem 1.4rem;
+    display:flex; flex-direction:column; box-shadow:0 1px 2px rgba(15,23,42,.05), 0 12px 26px rgba(15,23,42,.07); position:relative;
+  }
+  .tier.featured{border:2px solid var(--gold); box-shadow:0 1px 2px rgba(15,23,42,.05), 0 16px 34px rgba(146,110,20,.18);}
+  .tier .flag{
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:linear-gradient(180deg,#f2d67c,var(--gold) 55%,#b28c26);
+    color:var(--navy); border:1px solid #8a6d1f; font-weight:800; font-size:.78rem; letter-spacing:1px; padding:.35rem .9rem; border-radius:999px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 3px 7px rgba(146,110,20,.35); white-space:nowrap;
+  }
+  .tier h3{font-size:1.15rem;}
+  .tier .price{font-size:2.1rem; font-weight:800; margin:.4rem 0 0;}
+  .tier .price span{font-size:1rem; font-weight:600; color:var(--slate);}
+  .tier .setup{color:var(--gold-deep); font-weight:700; font-size:.95rem;}
+  .tier ul{list-style:none; margin:1rem 0 1.4rem; display:flex; flex-direction:column; gap:.5rem; color:var(--slate); font-size:.96rem;}
+  .tier ul li::before{content:"\2713"; color:var(--gold-deep); font-weight:800; margin-right:.5rem;}
+  .tier .btn{margin-top:auto;}
+  .pricing-fine{max-width:820px; margin:1.6rem auto 0; text-align:center; color:var(--slate); font-size:.93rem;}
+  .offer-banner{
+    max-width:860px; margin:2.4rem auto 0; background:linear-gradient(180deg,var(--navy),var(--navy-2));
+    color:#f8fafc; border-radius:16px; padding:1.8rem 1.6rem; text-align:center; box-shadow:0 10px 26px rgba(11,18,32,.25);
+  }
+  .offer-banner .big{font-size:1.35rem; font-weight:800; font-style:italic;}
+  .offer-banner p{color:#cbd5e1; margin-top:.6rem; font-size:.99rem;}
+  .offer-banner p strong{color:#fff;}
+</style>
+
+<section id="pricing">
+  <div class="wrap">
+    <p class="kicker">Launch Pricing</p>
+    <h2 class="title">Priced so one saved job pays for the month</h2>
+    <p class="section-sub">Every tier includes English &amp; Spanish answering, emergency escalation, call recordings and transcripts, and the monthly Money Report. No per-call fees. Month-to-month.</p>
+
+    <div class="tiers">
+      <div class="tier">
+        <h3>After-Hours</h3>
+        <p class="price">$179<span>/mo</span></p>
+        <p class="setup">&nbsp;</p>
+        <ul>
+          <li>100 agent minutes a month, then $0.95/min</li>
+          <li>Nights, weekends &amp; holidays answering</li>
+          <li>Emergency escalation to your on-call person</li>
+          <li>Text &amp; email summary after every call</li>
+          <li>Monthly Money Report</li>
+        </ul>
+        <a class="btn ghost" href="#start">Start With After-Hours</a>
+      </div>
+
+      <div class="tier featured">
+        <span class="flag">MOST SHOPS START HERE</span>
+        <h3>Flagship &mdash; Answer Everything</h3>
+        <p class="price">$299<span>/mo</span></p>
+        <p class="setup">+ $499 one-time setup</p>
+        <ul>
+          <li>300 agent minutes a month, then $0.95/min</li>
+          <li>All-hours answering, including Overflow Mode</li>
+          <li>Books straight into your calendar; Jobber &amp; Housecall Pro flow where tested</li>
+          <li>Emergency escalation, summaries &amp; Caller Texts</li>
+          <li>Monthly Money Report with your own average ticket</li>
+        </ul>
+        <a class="btn" href="#start">Start With Flagship</a>
+      </div>
+
+      <div class="tier">
+        <h3>Busy Shop</h3>
+        <p class="price">$449<span>/mo</span></p>
+        <p class="setup">&nbsp;</p>
+        <ul>
+          <li>600 agent minutes a month, then $0.85/min</li>
+          <li>Everything in Flagship</li>
+          <li>Multi-location or multi-trade shops</li>
+          <li>Priority QA on your calls</li>
+          <li>ServiceTitan custom-integration eligibility</li>
+        </ul>
+        <a class="btn ghost" href="#start">Start With Busy Shop</a>
+      </div>
+    </div>
+
+    <p class="pricing-fine">Setup covers your Business Pack build, number setup, a full battery of test calls before go-live, and a 15-minute orientation for your staff. Minutes are agent talk minutes &mdash; the Flagship&rsquo;s 300 minutes is roughly 125 handled calls. One saved repair job typically covers a month of service; your Money Report proves it with your own numbers every month.</p>
+
+    <div class="offer-banner">
+      <p class="big">&ldquo;Show you better than I can tell you.&rdquo;</p>
+      <p>At launch, qualified shops can run a <strong>free 7-day live demo</strong>: the receptionist answers your real overflow and after-hours calls for a week &mdash; free, no card up front. On day 7 you get the Money Report with your own numbers. <strong>Sign within 48 hours of the report and the $499 setup fee is waived.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GET STARTED ================= -->
+<style>
+  .intake{
+    max-width:640px; margin:2.2rem auto 0; background:#fff; border:1px solid var(--line); border-radius:16px;
+    padding:1.8rem 1.6rem; box-shadow:0 8px 22px rgba(15,23,42,.08); text-align:left;
+  }
+  .intake label{display:block; font-weight:700; font-size:.95rem; margin:1rem 0 .35rem;}
+  .intake label:first-child{margin-top:0;}
+  .intake input, .intake select{
+    width:100%; min-height:48px; padding:.65rem .8rem; border:1px solid #b6c2d2; border-radius:9px;
+    font-size:1rem; font-family:inherit; background:#fff; color:var(--ink);
+  }
+  .intake input:focus, .intake select:focus{border-color:var(--gold-deep); outline:3px solid rgba(212,175,55,.45); outline-offset:1px;}
+  .intake .btn{width:100%; margin-top:1.4rem;}
+  .form-note{text-align:center; color:var(--slate); font-size:.9rem; margin-top:.9rem;}
+  .confirm{
+    display:none; max-width:640px; margin:2.2rem auto 0; background:#ecfdf5; border:1px solid #6ee7b7;
+    border-radius:16px; padding:1.8rem 1.6rem; text-align:center;
+  }
+  .confirm.show{display:block;}
+  .confirm h3{font-size:1.25rem; margin-bottom:.5rem;}
+  .confirm p{color:#334155;}
+  footer.site{background:var(--navy); color:#cbd5e1; padding:2.4rem 1.25rem; text-align:center;}
+  footer.site .wordmark{font-size:1.2rem;}
+  footer.site p{margin-top:.6rem; font-size:.93rem; color:var(--slate-lt);}
+  footer.site .firm{color:#f8fafc; font-weight:700;}
+</style>
+
+<section id="start" class="alt">
+  <div class="wrap">
+    <p class="kicker">Get Started</p>
+    <h2 class="title">Hold your place in the January 1 launch</h2>
+    <p class="section-sub">Tell us about your shop and you&rsquo;re in line for launch pricing and the free 7-day demo. Checkout opens January 1, 2027 &mdash; nothing is charged today.</p>
+
+    <form class="intake" id="intakeForm" novalidate>
+      <label for="fBiz">Business name</label>
+      <input id="fBiz" name="business" type="text" autocomplete="organization" required>
+      <label for="fOwner">Owner name</label>
+      <input id="fOwner" name="owner" type="text" autocomplete="name" required>
+      <label for="fTrade">Trade</label>
+      <select id="fTrade" name="trade" required>
+        <option value="">Choose your trade&hellip;</option>
+        <option>Plumbing</option>
+        <option>HVAC</option>
+        <option>Roofing</option>
+        <option>Electrical</option>
+        <option>Garage Door</option>
+        <option>Pest Control</option>
+        <option>More than one trade</option>
+      </select>
+      <label for="fPhone">Phone</label>
+      <input id="fPhone" name="phone" type="tel" autocomplete="tel" required>
+      <label for="fEmail">Email</label>
+      <input id="fEmail" name="email" type="email" autocomplete="email" required>
+      <label for="fTime">Best time to reach you</label>
+      <select id="fTime" name="besttime" required>
+        <option value="">Choose a time&hellip;</option>
+        <option>Morning (7&ndash;11 AM)</option>
+        <option>Midday (11 AM&ndash;2 PM)</option>
+        <option>Afternoon (2&ndash;6 PM)</option>
+        <option>Evening (after 6 PM)</option>
+      </select>
+      <button class="btn" type="submit">Hold My Place for January 1</button>
+      <p class="form-note">Launch pricing &mdash; checkout opens January 1, 2027. This preview form doesn&rsquo;t send or store anything yet; it just shows you the confirmation you&rsquo;ll get at launch.</p>
+    </form>
+
+    <div class="confirm" id="confirmBox" role="status">
+      <h3>You&rsquo;re on the board. &#10003;</h3>
+      <p id="confirmText">Thanks &mdash; your place at launch pricing is held. Checkout opens January 1, 2027, and we&rsquo;ll reach out before then to build your Business Pack and schedule your free 7-day demo.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <span class="wordmark">av<span class="ai">AI</span>lable<sup class="tm">&trade;</sup></span>
+  <p class="firm">avAIlable&trade; by MVP Forge</p>
+  <p>Launching January 1, 2027 &middot; Knoxville &amp; East Tennessee</p>
+  <p>Our receptionist always identifies itself as an AI assistant, and callers can ask for a human at any time. That&rsquo;s in the contract, not just the marketing.</p>
+</footer>
+
+<script>
+const CALLS = {
+  plumbing: {
+    title: "9:47 PM — a burst pipe, answered on the first ring",
+    shop: "Sample shop: Volunteer Home Services, Knoxville (fictional)",
+    lines: [
+      {who:"caller", name:"Caller", text:"Uh — hello? A pipe just burst under my kitchen sink, there's water going everywhere!"},
+      {who:"agent", name:"Sam · AI Assistant", text:"I'm getting you help right now. This is Sam, the AI assistant for Volunteer Home Services. If you know where your main water shutoff valve is and it's safe to reach, go ahead and shut the water off there. Then stay with me — what's your name and the address where the water is?"},
+      {who:"caller", name:"Caller", text:"It's Renee. 4412 Kingston Pike. Okay — I found the valve, the water's slowing down."},
+      {who:"agent", name:"Sam · AI Assistant", text:"Good work, Renee. I've alerted Marcus, our on-call tech — he has your number and this recording right now, and he'll call you back within 15 minutes. If he doesn't pick up, the alert rolls to dispatch and then to Dana, the owner. Is the number you're calling from the best one for Marcus?"},
+      {who:"caller", name:"Caller", text:"Yes, this one. Thank you — the first plumber I called just rang and rang."},
+      {who:"agent", name:"Sam · AI Assistant", text:"That's exactly why this line answers at night. You're logged as an emergency visit — Marcus tonight, and a truck first thing in the morning at the latest. I'm texting you a confirmation now, and Dana has the full summary. If the water starts rising again, call us right back."},
+      {who:"system", name:"Text to the owner — sent instantly", text:"🚨 EMERGENCY · Volunteer Home Services — Renee C., 4412 Kingston Pike: burst kitchen pipe, water shut off at the main. Escalated to Marcus (on-call) 9:47 PM. Callback confirmed. Recording + transcript attached."}
+    ]
+  },
+  hvac: {
+    title: "Saturday, 1:20 PM — AC blowing warm air",
+    shop: "Sample shop: Volunteer Home Services, Knoxville (fictional)",
+    lines: [
+      {who:"agent", name:"Sam · AI Assistant", text:"Thanks for calling Volunteer Home Services, this is Sam, the shop's AI assistant — this call may be recorded so the team can review it. I can book you, answer questions about our heating and cooling services, or get you to Dana fast in an emergency. What's going on at the house?"},
+      {who:"caller", name:"Caller", text:"Our air conditioner is running, but it's blowing warm air. The house is up to 84 degrees."},
+      {who:"agent", name:"Sam · AI Assistant", text:"I'm sorry — that's a miserable Saturday. Before I book you: is anyone in the home especially sensitive to heat — a baby, someone elderly, or anyone with medical equipment?"},
+      {who:"caller", name:"Caller", text:"No, just me and my wife. We're okay, just hot."},
+      {who:"agent", name:"Sam · AI Assistant", text:"Alright, we'll treat it as a priority repair. Can I get your name and the service address? … Thank you. When did it start blowing warm?"},
+      {who:"caller", name:"Caller", text:"Started this morning. It froze up once last summer, if that matters."},
+      {who:"agent", name:"Sam · AI Assistant", text:"It does — I'll put that on the job for the tech. Our diagnostic fee is $89, and it's waived if you go ahead with the repair we find. The tech confirms everything on site before any work starts. I have today between 4 and 7, or tomorrow morning 7 to 10. Which works better?"},
+      {who:"caller", name:"Caller", text:"Today, 4 to 7."},
+      {who:"agent", name:"Sam · AI Assistant", text:"You're booked: today, 4 to 7 PM, AC blowing warm air, froze up once last summer. I'm texting your confirmation now, and the shop has your summary. If the house gets unbearable before then, call back and we'll move you up."},
+      {who:"system", name:"Text to the owner — sent instantly", text:"📋 BOOKED · Volunteer Home Services — Sat 4–7 PM: AC blowing warm air (froze once last summer). Diagnostic $89, waived with repair. Caller confirmed by text."}
+    ]
+  },
+  roofing: {
+    title: "During a storm — water coming through the ceiling",
+    shop: "Sample shop: Smoky Mountain Roofing (fictional)",
+    lines: [
+      {who:"caller", name:"Caller", text:"Yeah, it's raining hard and I've got water dripping through my living room ceiling, right under where a branch hit the roof."},
+      {who:"agent", name:"Casey · AI Assistant", text:"This is Casey, the AI assistant for Smoky Mountain Roofing — I'm treating this as an emergency. A branch through the roof with water coming in means our on-call crew gets alerted right now, not in the morning. What's your name and address?"},
+      {who:"caller", name:"Caller", text:"Tom B., over in Halls. I've got a bucket under it."},
+      {who:"agent", name:"Casey · AI Assistant", text:"Good — keep the bucket there, and if you can do it safely, move anything valuable out from under the drip. Don't climb up there in this weather, please. I've alerted the on-call crew with your number and this recording. They'll call you back within 20 minutes about an emergency tarp visit. Is this the best number?"},
+      {who:"caller", name:"Caller", text:"Yes. And — will insurance cover something like this?"},
+      {who:"agent", name:"Casey · AI Assistant", text:"I don't want to guess at that — claims are the owner's call, not mine, and I've flagged your question so the shop answers it on the callback. What I can promise is photos and a written summary of the damage visit for your records."},
+      {who:"agent", name:"Casey · AI Assistant", text:"You're confirmed for the emergency tarp list tonight, Tom. Confirmation text is on its way, and the crew has everything. Call back if the drip spreads to another room."},
+      {who:"system", name:"Text to the owner — sent instantly", text:"🚨 EMERGENCY · Smoky Mountain Roofing — Tom B., Halls: branch strike, active leak into living room. On-call crew alerted; tarp visit pending callback (20-min window). Insurance question flagged for owner — agent did not advise."}
+    ]
+  },
+  electrical: {
+    title: "Sunday morning — half the house lost power",
+    shop: "Sample shop: Volunteer Electric (fictional)",
+    lines: [
+      {who:"agent", name:"Jordan · AI Assistant", text:"Thanks for calling Volunteer Electric, this is Jordan, the shop's AI assistant — this call may be recorded so the team can review it. What's going on at the house?"},
+      {who:"caller", name:"Caller", text:"Half my house lost power and the breaker keeps tripping every time I flip it back."},
+      {who:"agent", name:"Jordan · AI Assistant", text:"Two quick safety questions first. Do you smell anything burning, or see any sparking or smoke near the panel or an outlet?"},
+      {who:"caller", name:"Caller", text:"No — no smell, no sparks. Just dead outlets on one side of the house."},
+      {who:"agent", name:"Jordan · AI Assistant", text:"Okay. Until the tech gets there, leave that breaker off — don't keep resetting it. Let me get your name and address… and is it the whole side of the house, or one room?"},
+      {who:"caller", name:"Caller", text:"Kitchen and laundry room. The fridge is on that side, that's my worry."},
+      {who:"agent", name:"Jordan · AI Assistant", text:"Understood — I'll note the fridge on the job. Our service call is quoted by the tech on site; the shop doesn't quote panel work over the phone, and I won't guess at it. I have tomorrow between 7 and 10 AM, or an emergency visit today. With a fridge down, most folks take today — your call."},
+      {who:"caller", name:"Caller", text:"Today. Let's do today."},
+      {who:"agent", name:"Jordan · AI Assistant", text:"Booked for today's emergency window — the dispatcher will text you the tighter arrival window within the hour, and you'll get a confirmation text from me right now. Breaker stays off till they arrive."},
+      {who:"system", name:"Text to the owner — sent instantly", text:"📋 BOOKED (emergency, today) · Volunteer Electric — partial outage, kitchen + laundry, breaker tripping (no burning/sparking reported). Caller advised to leave breaker off. Price not quoted — per shop rules."}
+    ]
+  },
+  garage: {
+    title: "6:15 AM — broken spring, car trapped, work at 8",
+    shop: "Sample shop: Top Notch Garage Doors (fictional)",
+    lines: [
+      {who:"caller", name:"Caller", text:"I heard a loud bang in the garage and now the door won't open at all. My car's inside and I have to be at work at 8."},
+      {who:"agent", name:"Riley · AI Assistant", text:"This is Riley, the AI assistant for Top Notch Garage Doors. That bang was very likely a broken spring. One safety rule first: don't try to lift the door or touch the spring — those springs are under serious tension and can hurt you. What's your name and address?"},
+      {who:"caller", name:"Caller", text:"Marcus, in Powell. Yeah, the spring looks snapped in two."},
+      {who:"agent", name:"Riley · AI Assistant", text:"Thanks, Marcus — that confirms it. A trapped car with a work deadline is a priority call for us. I'm alerting our first-out tech now, and I'm booking you into the first window today, 7 to 9 AM. The dispatcher will text you a tighter time within 15 minutes. Is this your best number?"},
+      {who:"caller", name:"Caller", text:"Yes. Any idea what a spring costs?"},
+      {who:"agent", name:"Riley · AI Assistant", text:"Spring jobs depend on the door's size and weight, so the tech measures and quotes it on site before any work — I don't want to guess you a wrong number. What I can do is note that you need the car out by 8, and that's on the job in big letters."},
+      {who:"agent", name:"Riley · AI Assistant", text:"You're confirmed, Marcus: first window, 7 to 9, car trapped flagged urgent. Confirmation text is coming now. If anything changes, call this number back and you'll get me or the dispatcher — never a voicemail."},
+      {who:"system", name:"Text to the owner — sent instantly", text:"📋 BOOKED (priority) · Top Notch Garage Doors — Marcus, Powell: broken torsion spring, car trapped, needs out by 8 AM. First window 7–9. Price not quoted — per shop rules."}
+    ]
+  },
+  pest: {
+    title: "Weekday evening — ants in the kitchen, asking about a plan",
+    shop: "Sample shop: Volunteer Pest Control (fictional)",
+    lines: [
+      {who:"agent", name:"Alex · AI Assistant", text:"Thanks for calling Volunteer Pest Control, this is Alex, the shop's AI assistant — this call may be recorded so the team can review it. What's going on at the house?"},
+      {who:"caller", name:"Caller", text:"Ants. Everywhere in the kitchen, coming in around the sink. It's getting worse every day."},
+      {who:"agent", name:"Alex · AI Assistant", text:"We'll get somebody out there. Quick questions: any kids or pets in the home we should plan around, and have you sprayed anything on them already?"},
+      {who:"caller", name:"Caller", text:"Two kids, one dog. I sprayed the store-bought stuff twice — they keep coming back."},
+      {who:"agent", name:"Alex · AI Assistant", text:"That's on the job for the tech, including the kid-and-pet-safe prep instructions he'll text you before the visit. I can book the initial treatment tomorrow between 10 and 1, or Friday 1 to 4."},
+      {who:"caller", name:"Caller", text:"Tomorrow. And my neighbor said y'all do a quarterly plan — what does that run?"},
+      {who:"agent", name:"Alex · AI Assistant", text:"We do — most homes start the plan at the first visit, and the tech will walk you through the exact quarterly price for your home's size on site. I don't quote plan prices by phone because I don't want to give you a number that changes when he measures. What I can tell you: the plan covers quarterly interior and exterior treatments and free re-treats between visits if the ants come back."},
+      {who:"caller", name:"Caller", text:"Fair enough. Tomorrow, 10 to 1."},
+      {who:"agent", name:"Alex · AI Assistant", text:"Booked: tomorrow, 10 to 1, kitchen ant infestation, kids and a dog in the home, plan interest noted. Your confirmation text is on its way — and the prep instructions will come with it."},
+      {who:"system", name:"Text to the owner — sent instantly", text:"📋 BOOKED · Volunteer Pest Control — tomorrow 10–1: kitchen ants (store spray failed twice). Kids + dog in home — prep instructions sent. Caller asked about quarterly plan: price deferred to tech on site, per shop rules."}
+    ]
+  }
+};
+
+const transcriptEl = document.getElementById('transcript');
+const titleEl = document.getElementById('scenarioTitle');
+const shopEl = document.getElementById('scenarioShop');
+const playBtn = document.getElementById('playBtn');
+const restartBtn = document.getElementById('restartBtn');
+const progressEl = document.getElementById('progressText');
+const liveDot = document.getElementById('liveDot');
+
+let currentTrade = 'plumbing';
+let shown = 0;
+let playing = false;
+let timer = null;
+
+function renderTrade(trade){
+  stopPlayback();
+  currentTrade = trade;
+  shown = 0;
+  transcriptEl.innerHTML = '';
+  titleEl.textContent = CALLS[trade].title;
+  shopEl.textContent = CALLS[trade].shop;
+  playBtn.innerHTML = '&#9654; Play Sample Call';
+  updateProgress();
+}
+function updateProgress(){
+  const total = CALLS[currentTrade].lines.length;
+  progressEl.textContent = shown === 0 ? total + ' exchanges' : 'Exchange ' + shown + ' of ' + total;
+}
+function showNext(){
+  const lines = CALLS[currentTrade].lines;
+  if (shown >= lines.length){ stopPlayback(); return; }
+  const line = lines[shown];
+  const div = document.createElement('div');
+  div.className = 'msg ' + line.who;
+  const who = document.createElement('span');
+  who.className = 'who';
+  who.textContent = line.name;
+  div.appendChild(who);
+  div.appendChild(document.createTextNode(line.text));
+  transcriptEl.appendChild(div);
+  requestAnimationFrame(()=> div.classList.add('show'));
+  shown++;
+  updateProgress();
+  transcriptEl.scrollTop = transcriptEl.scrollHeight;
+  if (shown >= lines.length){ stopPlayback(); playBtn.innerHTML = '&#8635; Play Again'; }
+}
+function startPlayback(){
+  if (shown >= CALLS[currentTrade].lines.length){ renderTrade(currentTrade); }
+  playing = true;
+  liveDot.classList.add('on');
+  playBtn.innerHTML = '&#10073;&#10073; Pause';
+  showNext();
+  timer = setInterval(showNext, 2100);
+}
+function stopPlayback(){
+  playing = false;
+  liveDot.classList.remove('on');
+  if (timer){ clearInterval(timer); timer = null; }
+  if (shown < CALLS[currentTrade].lines.length){ playBtn.innerHTML = '&#9654; ' + (shown === 0 ? 'Play Sample Call' : 'Keep Playing'); }
+}
+playBtn.addEventListener('click', ()=>{ playing ? stopPlayback() : startPlayback(); });
+restartBtn.addEventListener('click', ()=> renderTrade(currentTrade));
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=> b.setAttribute('aria-selected','false'));
+    btn.setAttribute('aria-selected','true');
+    renderTrade(btn.dataset.trade);
+  });
+});
+renderTrade('plumbing');
+
+/* Intake form — front-end placeholder. Nothing is transmitted or stored. */
+document.getElementById('intakeForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const form = e.target;
+  if (!form.reportValidity()) return;
+  const biz = document.getElementById('fBiz').value.trim();
+  const trade = document.getElementById('fTrade').value;
+  const box = document.getElementById('confirmBox');
+  document.getElementById('confirmText').textContent =
+    'Thanks' + (biz ? ', ' + biz : '') + ' — your place at launch pricing is held' +
+    (trade ? ' for ' + trade : '') +
+    '. Checkout opens January 1, 2027, and we\u2019ll reach out before then to build your Business Pack and schedule your free 7-day demo. (Preview note: this form doesn\u2019t transmit or store anything yet.)';
+  box.classList.add('show');
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+});
+</script>
+
+<script src="https://dashboard.retellai.com/retell-widget-embed.js"></script>
+</body>
+</html>
